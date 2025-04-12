@@ -11,12 +11,13 @@ import {
   FaComments,
   FaUserCircle,
   FaSignOutAlt,
+  FaGlobe,
 } from "react-icons/fa";
 
 const Navbar = ({ onChatClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [user, setUser] = useState(null); // 👈 user state
+  const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
@@ -27,13 +28,21 @@ const Navbar = ({ onChatClick }) => {
   }, []);
 
   useEffect(() => {
-    // Fetch user data from localStorage or Auth service
     const loggedInUser = JSON.parse(localStorage.getItem("user"));
     if (loggedInUser) setUser(loggedInUser);
   }, []);
 
+  const handleLanguageChange = (e) => {
+    const lang = e.target.value;
+    const selectElem = document.querySelector(".goog-te-combo");
+    if (selectElem) {
+      selectElem.value = lang;
+      selectElem.dispatchEvent(new Event("change"));
+    }
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Clear auth info
+    localStorage.removeItem("user");
     setUser(null);
     navigate("/");
   };
@@ -91,6 +100,28 @@ const Navbar = ({ onChatClick }) => {
     width: "160px",
   };
 
+  const renderLinks = () => (
+    <>
+      {[
+        { icon: <FaHome />, label: "Home", id: "home" },
+        { icon: <FaInfoCircle />, label: "About Us", id: "about" },
+        { icon: <FaServicestack />, label: "Services", id: "services" },
+        { icon: <FaPhone />, label: "Contact", id: "contact" },
+      ].map(({ icon, label, id }) => (
+        <li key={id} style={{ marginRight: "30px" }}>
+          <span
+            style={{ ...linkStyle }}
+            onClick={() => handleScroll(id)}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#facc15")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
+          >
+            {icon} {label}
+          </span>
+        </li>
+      ))}
+    </>
+  );
+
   return (
     <nav style={navbarStyle}>
       {/* Logo */}
@@ -115,39 +146,37 @@ const Navbar = ({ onChatClick }) => {
           onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
           onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
         />
-        <span
-          style={{
-            ...linkStyle,
-            fontSize: "20px",
-            fontWeight: "900",
-            padding: 0,
-          }}
-        >
+        <span style={{ ...linkStyle, fontSize: "20px", fontWeight: "900", padding: 0 }}>
           SchemeSathi
         </span>
       </div>
-
+  
+      {/* Hamburger icon for mobile */}
+      <div
+        style={{
+          display: isMobile ? "block" : "none",
+          color: "white",
+          fontSize: "24px",
+          zIndex: 1001,
+        }}
+        onClick={toggleMenu}
+      >
+        {isOpen ? <FaTimes /> : <FaBars />}
+      </div>
+  
       {/* Desktop Menu */}
-      <ul style={{ ...(!isMobile ? { display: "flex" } : { display: "none" }), listStyle: "none", alignItems: "center", margin: 0 }}>
-        {[
-          { icon: <FaHome />, label: "Home", id: "home" },
-          { icon: <FaInfoCircle />, label: "About Us", id: "about" },
-          { icon: <FaServicestack />, label: "Services", id: "services" },
-          { icon: <FaPhone />, label: "Contact", id: "contact" },
-        ].map(({ icon, label, id }) => (
-          <li key={id} style={{ marginRight: "30px" }}>
-            <span
-              style={linkStyle}
-              onClick={() => handleScroll(id)}
-              onMouseEnter={(e) => Object.assign(e.target.style, { color: "#facc15", transform: "translateY(-2px)" })}
-              onMouseLeave={(e) => Object.assign(e.target.style, linkStyle)}
-            >
-              {icon} {label}
-            </span>
-          </li>
-        ))}
-
-        <li style={{ marginRight: "25px" }}>
+      <ul
+        style={{
+          display: isMobile ? "none" : "flex",
+          listStyle: "none",
+          alignItems: "center",
+          margin: 0,
+          padding: 0,
+          gap: "10px",
+        }}
+      >
+        {renderLinks()}
+        <li>
           <span
             style={{
               ...linkStyle,
@@ -159,37 +188,56 @@ const Navbar = ({ onChatClick }) => {
               color: "#1E40AF",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
             }}
-            onMouseEnter={(e) =>
-              Object.assign(e.target.style, {
-                backgroundColor: "#eab308",
-                transform: "translateY(-2px)",
-              })
-            }
-            onMouseLeave={(e) =>
-              Object.assign(e.target.style, {
-                backgroundColor: "#facc15",
-                transform: "translateY(0)",
-              })
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#eab308")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#facc15")}
             onClick={handleChatClick}
           >
             <FaComments style={{ fontSize: "22px" }} /> Chat with Me
           </span>
         </li>
-
+  
+        {/* Language Selector */}
+        <li>
+          <select
+            onChange={handleLanguageChange}
+            style={{
+              backgroundColor: "#1E40AF",
+              border: "none",
+              color: "white",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+          >
+            <option value="en">🌐 English</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="mr">🇮🇳 Marathi</option>
+            <option value="gu">🇮🇳 Gujarati</option>
+            <option value="bn">🇮🇳 Bengali</option>
+            <option value="te">🇮🇳 Telugu</option>
+            <option value="ta">🇮🇳 Tamil</option>
+            <option value="kn">🇮🇳 Kannada</option>
+            <option value="pa">🇮🇳 Punjabi</option>
+          </select>
+        </li>
+  
+        {/* SignIn / Profile */}
         {user ? (
           <li style={{ position: "relative" }}>
-            <span
-              style={{ ...linkStyle }}
-              onClick={() => setShowDropdown(!showDropdown)}
-            >
+            <span style={linkStyle} onClick={() => setShowDropdown(!showDropdown)}>
               <FaUserCircle /> {user.name}
             </span>
             {showDropdown && (
               <div style={profileDropdownStyle}>
                 <p style={{ margin: "8px 0", fontWeight: "bold" }}>{user.email}</p>
                 <div
-                  style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", paddingTop: "8px", color: "#ef4444" }}
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    paddingTop: "8px",
+                    color: "#ef4444",
+                  }}
                   onClick={handleLogout}
                 >
                   <FaSignOutAlt /> Logout
@@ -202,73 +250,85 @@ const Navbar = ({ onChatClick }) => {
             <span
               style={linkStyle}
               onClick={() => navigate("/signin")}
-              onMouseEnter={(e) => Object.assign(e.target.style, { color: "#facc15", transform: "translateY(-2px)" })}
-              onMouseLeave={(e) => Object.assign(e.target.style, linkStyle)}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#facc15")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
             >
               <FaSignInAlt /> Sign In
             </span>
           </li>
         )}
       </ul>
-
-      {/* Hamburger Icon */}
-      <div style={{ display: isMobile ? "block" : "none", color: "white", fontSize: "24px" }} onClick={toggleMenu}>
-        {isOpen ? <FaTimes /> : <FaBars />}
-      </div>
-
-      {/* Mobile Menu */}
+  
+      {/* Mobile Dropdown */}
       {isOpen && (
-        <div
+        <ul
           style={{
-            display: "flex",
-            flexDirection: "column",
             position: "absolute",
             top: "60px",
             left: 0,
             width: "100%",
             backgroundColor: "#1E40AF",
             padding: "16px",
-            boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+            listStyle: "none",
+            zIndex: 999,
           }}
         >
-          <span style={linkStyle} onClick={() => handleScroll("home")}>
-            <FaHome /> Home
-          </span>
-          <span style={linkStyle} onClick={() => handleScroll("about")}>
-            <FaInfoCircle /> About Us
-          </span>
-          <span style={linkStyle} onClick={() => handleScroll("services")}>
-            <FaServicestack /> Services
-          </span>
-          <span style={linkStyle} onClick={() => handleScroll("contact")}>
-            <FaPhone /> Contact
-          </span>
-
+          {renderLinks()}
+          <li>
+            <span style={linkStyle} onClick={handleChatClick}>
+              <FaComments /> Chat with Me
+            </span>
+          </li>
+          <li style={{ marginBottom: "12px" }}>
+            <select
+              onChange={handleLanguageChange}
+              style={{
+                padding: "8px",
+                borderRadius: "8px",
+                border: "none",
+                fontWeight: "bold",
+                backgroundColor: "#facc15",
+                color: "#1E40AF",
+                cursor: "pointer",
+                width: "100%",
+              }}
+            >
+              <option value="en">🌐 English</option>
+              <option value="hi">🇮🇳 Hindi</option>
+              <option value="mr">🇮🇳 Marathi</option>
+              <option value="gu">🇮🇳 Gujarati</option>
+              <option value="bn">🇮🇳 Bengali</option>
+              <option value="te">🇮🇳 Telugu</option>
+              <option value="ta">🇮🇳 Tamil</option>
+              <option value="kn">🇮🇳 Kannada</option>
+              <option value="pa">🇮🇳 Punjabi</option>
+            </select>
+          </li>
           {user ? (
             <>
-              <span style={linkStyle}>
-                <FaUserCircle /> {user.name}
-              </span>
-              <span
-                style={{ ...linkStyle, color: "#ef4444" }}
-                onClick={handleLogout}
-              >
-                <FaSignOutAlt /> Logout
-              </span>
+              <li>
+                <span style={linkStyle}>
+                  <FaUserCircle /> {user.name}
+                </span>
+              </li>
+              <li>
+                <span style={{ ...linkStyle, color: "#ef4444" }} onClick={handleLogout}>
+                  <FaSignOutAlt /> Logout
+                </span>
+              </li>
             </>
           ) : (
-            <span style={linkStyle} onClick={() => navigate("/signin")}>
-              <FaSignInAlt /> Sign In
-            </span>
+            <li>
+              <span style={linkStyle} onClick={() => navigate("/signin")}>
+                <FaSignInAlt /> Sign In
+              </span>
+            </li>
           )}
-        
-          <span style={linkStyle} onClick={handleChatClick}>
-            <FaComments /> Chat with Me
-          </span>
-         </div>
+        </ul>
       )}
     </nav>
   );
+  
 };
 
 export default Navbar;

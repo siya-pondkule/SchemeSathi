@@ -14,6 +14,7 @@ import Chatbot from './Chatbot/Chatbot';
 import { useState } from "react";
 import {UserProvider} from './Auth/UserContext';
 import UserDocuments from "./Dashboard/User/UserDocuments"; // adjust path if needed
+import LanguageSwitcher from './LanguageSwitcher';
 
 const UserDocumentsWrapper = () => {
   const user = JSON.parse(localStorage.getItem("user"));
