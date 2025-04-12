@@ -10,12 +10,26 @@ import Signin from './Auth/Signin';
 import Admin from './Dashboard/Admin/AdminDashboard';
 import Students from './Dashboard/Student/StudentDashboard ';
 import Users from './Dashboard/User/Users'
+import Chatbot from './Chatbot/Chatbot';
+import { useState } from "react";
+import {UserProvider} from './Auth/UserContext';
+import UserDocuments from "./Dashboard/User/UserDocuments"; // adjust path if needed
+
+const UserDocumentsWrapper = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return <UserDocuments userId={user?.id} />;
+};
 
 const App = () => {
+  const [chatOpen, setChatOpen] = useState(false);
+
   return (
+    <UserProvider>
+
     <div>
       <Router>
-        <Navbar />
+      <Navbar onChatClick={() => setChatOpen(true)} />
+      {chatOpen && <Chatbot onClose={() => setChatOpen(false)} />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -26,9 +40,12 @@ const App = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/students" element={<Students />} />
           <Route path="/users" element={<Users />} />
-        </Routes>
+          <Route path="/upload-documents" element={<UserDocumentsWrapper />} />
+
+          </Routes>
       </Router>
     </div>
+    </UserProvider>
   )
 }
 

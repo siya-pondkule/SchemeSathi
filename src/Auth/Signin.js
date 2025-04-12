@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import supabase from '../Supabase/supabase';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import supabase from "../Supabase/supabase";
+import { FaEnvelope, FaLock, FaUserShield } from "react-icons/fa";
 
 const Signin = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -14,72 +15,173 @@ const Signin = () => {
     e.preventDefault();
 
     const { data, error } = await supabase
-      .from('users')
-      .select('email, password, role')
-      .eq('email', formData.email)
+      .from("users")
+      .select("id, email, password, role")
+      .eq("email", formData.email)
       .single();
 
     if (error || !data) {
-      alert('User not found');
+      alert("User not found");
       return;
     }
 
     if (formData.password === data.password) {
-      alert('Login successful');
-      localStorage.setItem('user', JSON.stringify(data));
+      alert("Login successful");
+      localStorage.setItem("user", JSON.stringify(data));
       switch (data.role) {
-        case 'admin':
-          navigate('/admin');
+        case "admin":
+          navigate("/admin");
           break;
-        case 'student':
-          navigate('/students');
+        case "student":
+          navigate("/students");
           break;
-        case 'user':
-          navigate('/users');
+        case "user":
+          navigate("/users");
           break;
         default:
-          alert('Unknown role');
-          navigate('/');
+          alert("Unknown role");
+          navigate("/");
       }
     } else {
-      alert('Invalid password');
+      alert("Invalid password");
     }
   };
 
   return (
-    <div style={{
-      display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', /*background: 'linear-gradient(135deg, #667eea, #764ba2)'*/
-    }}>
-      <form 
-        style={{
-          width: '100%', maxWidth: '400px', padding: '30px', backgroundColor: 'white', borderRadius: '10px', 
-          boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)', textAlign: 'center'
-        }} 
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #e0f2fe, #f0fdf4)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px",
+      }}
+    >
+      <form
         onSubmit={handleSubmit}
+        style={{
+          backgroundColor: "#ffffff",
+          padding: "40px",
+          borderRadius: "15px",
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
+          width: "100%",
+          maxWidth: "420px",
+          textAlign: "center",
+        }}
       >
-        <h2 style={{ marginBottom: '20px', color: '#333' }}>Sign In</h2>
-        <input 
-          type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="Email" 
-          style={{ width: '100%', padding: '10px', marginBottom: '15px', borderRadius: '5px', border: '1px solid #ccc' }}
-        />
-        <input 
-          type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Password" 
-          style={{ width: '100%', padding: '10px', marginBottom: '20px', borderRadius: '5px', border: '1px solid #ccc' }}
-        />
-        <button 
-          type="submit" 
+        <FaUserShield size={50} color="#1e3a8a" style={{ marginBottom: "20px" }} />
+        <h2 style={{ marginBottom: "25px", color: "#1e3a8a" }}>
+          Government Scheme Portal Login
+        </h2>
+
+        <div style={{ position: "relative", marginBottom: "20px" }}>
+          <FaEnvelope
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "10px",
+              transform: "translateY(-50%)",
+              color: "#6b7280",
+            }}
+          />
+          
+         <input
+  type="email"
+  name="email"
+  placeholder="Enter your email"
+  value={formData.email}
+  onChange={handleChange}
+  required
+  style={{
+    padding: "12px 12px 12px 40px",
+    width: "100%",
+    borderRadius: "6px",
+    border: "1px solid #d1d5db",
+    outline: "none",
+    fontSize: "16px",
+    boxSizing: "border-box",
+    transition: "border-color 0.3s",
+  }}
+  onFocus={(e) => (e.target.style.borderColor = "#2563eb")}
+  onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
+/>
+        </div>
+
+        <div style={{ position: "relative", marginBottom: "25px" }}>
+          <FaLock
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "10px",
+              transform: "translateY(-50%)",
+              color: "#6b7280",
+            }}
+          />
+         <input
+  type="password"
+  name="password"
+  placeholder="Enter your password"
+  value={formData.password}
+  onChange={handleChange}
+  required
+  style={{
+    padding: "12px 12px 12px 40px",
+    width: "100%",
+    borderRadius: "6px",
+    border: "1px solid #d1d5db",
+    outline: "none",
+    fontSize: "16px",
+    boxSizing: "border-box",
+    transition: "border-color 0.3s",
+  }}
+  onFocus={(e) => (e.target.style.borderColor = "#2563eb")}
+  onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
+/>
+
+        </div>
+
+        <button
+          type="submit"
           style={{
-            width: '100%', padding: '10px', backgroundColor: '#667eea', color: 'white', border: 'none', 
-            borderRadius: '5px', cursor: 'pointer', fontSize: '16px', marginBottom: '10px'
+            width: "100%",
+            padding: "12px",
+            backgroundColor: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "background-color 0.3s",
+            marginBottom: "15px",
           }}
-        >Sign In</button>
-        <button 
-          type="button" onClick={() => navigate('/signup')} 
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#1e40af")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#2563eb")}
+        >
+          Sign In
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/signup")}
           style={{
-            width: '100%', padding: '10px', backgroundColor: '#764ba2', color: 'white', border: 'none', 
-            borderRadius: '5px', cursor: 'pointer', fontSize: '16px'
+            width: "100%",
+            padding: "12px",
+            backgroundColor: "#059669",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "background-color 0.3s",
           }}
-        >Register</button>
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#047857")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#059669")}
+        >
+          Register
+        </button>
       </form>
     </div>
   );

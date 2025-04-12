@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import supabase from '../Supabase/supabase';
+import { useNavigate } from "react-router-dom";
+import { FaEnvelope, FaLock, FaUserShield } from "react-icons/fa";
+
 
 const Signup = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -75,7 +80,7 @@ const Signup = () => {
       console.error('Error inserting data:', error);
     } else {
       console.log('User registered:', data);
-      alert('Registration Successful');
+      navigate('/signin');
     }
   };
 
@@ -86,7 +91,8 @@ const Signup = () => {
       alignItems: 'center', 
       height: 'auto', 
       backgroundColor: '#e3f2fd',
-      padding: '40px'
+      padding: '40px',
+      marginTop: "50px"
     }}>
       <form 
         style={{ 
@@ -95,12 +101,28 @@ const Signup = () => {
           padding: '25px', 
           backgroundColor: '#ffffff', 
           borderRadius: '12px', 
+          borderColor: '#F20826',
           boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)'
         }} 
         onSubmit={handleSubmit}
       >
-        <h2 style={{ textAlign: 'center', color: '#1e40af', marginBottom: '20px' }}>Sign Up</h2>
 
+<div
+  style={{
+    marginTop: "5px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "20vh", 
+    borderRadius: "10px"
+  }}
+>
+  <FaUserShield size={50} color="#1e3a8a" style={{ marginBottom: "1px" }} />
+  <h2 style={{ marginBottom: "20px", color: "#1e3a8a", textAlign: "center" }}>
+    Register Now
+  </h2>
+</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
           {[
             { label: 'Name', type: 'text', name: 'name' },

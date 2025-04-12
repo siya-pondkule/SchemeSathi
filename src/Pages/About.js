@@ -28,6 +28,7 @@ const About = () => {
     height: '40vh',
     backgroundColor: '#f9fafb',
     padding: '20px',
+    
 
   };
 
@@ -83,7 +84,7 @@ const About = () => {
       <div style={contentStyle}>
         <div style={leftSideStyle}>
           <img
-            src={require('../Assets/about.jpg')}  // Replace with your image
+            src={require('../Assets/logo.jpeg')}  // Replace with your image
             alt="About Us"
             style={imageStyle}
             ref={imageRef}

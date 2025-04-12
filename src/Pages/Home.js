@@ -71,8 +71,10 @@ const Home = () => {
     justifyContent: 'center',
     alignItems: 'center',
     height: '52vh',
+    background: "linear-gradient(to bottom right, #e0f2fe, #f8fafc)",
+
     backgroundColor: '#f0f4f8',
-    marginTop: '75px',
+    marginTop: '90px',
   };
 
   const contentStyle = {
