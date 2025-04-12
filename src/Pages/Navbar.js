@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBars, FaTimes, FaHome, FaInfoCircle, FaServicestack, FaPhone, FaSignInAlt } from "react-icons/fa";
+import {
+  FaBars,
+  FaTimes,
+  FaHome,
+  FaInfoCircle,
+  FaServicestack,
+  FaPhone,
+  FaSignInAlt,
+  FaComments, // 👈 Added chat icon
+} from "react-icons/fa";
 
-const Navbar = () => {
+const Navbar = ({ onChatClick }) => { // 👈 Accepting a prop to handle chat click
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const navigate = useNavigate(); // 👈 Use navigate function
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,6 +37,12 @@ const Navbar = () => {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
       setIsOpen(false);
     }
+  };
+
+  // Open chatbot function
+  const handleChatClick = () => {
+    if (onChatClick) onChatClick(); // 👈 Trigger chatbot opening
+    setIsOpen(false); // Close menu after clicking (for mobile)
   };
 
   const navbarStyle = {
@@ -63,7 +78,7 @@ const Navbar = () => {
   };
 
   const menuItemStyle = {
-    marginRight: "30px",
+    marginRight: "50px",
   };
 
   const hamburgerStyle = {
@@ -108,54 +123,55 @@ const Navbar = () => {
       {/* Desktop Menu */}
       <ul style={menuStyle}>
         <li style={menuItemStyle}>
-          <span
-            style={linkStyle}
-            onMouseEnter={(e) => (e.target.style.color = "#facc15")}
-            onMouseLeave={(e) => (e.target.style.color = "white")}
-            onClick={() => handleScroll("home")}
-          >
+          <span style={linkStyle} onClick={() => handleScroll("home")}>
             <FaHome /> Home
           </span>
         </li>
         <li style={menuItemStyle}>
-          <span
-            style={linkStyle}
-            onMouseEnter={(e) => (e.target.style.color = "#facc15")}
-            onMouseLeave={(e) => (e.target.style.color = "white")}
-            onClick={() => handleScroll("about")}
-          >
+          <span style={linkStyle} onClick={() => handleScroll("about")}>
             <FaInfoCircle /> About Us
           </span>
         </li>
         <li style={menuItemStyle}>
-          <span
-            style={linkStyle}
-            onMouseEnter={(e) => (e.target.style.color = "#facc15")}
-            onMouseLeave={(e) => (e.target.style.color = "white")}
-            onClick={() => handleScroll("services")}
-          >
+          <span style={linkStyle} onClick={() => handleScroll("services")}>
             <FaServicestack /> Services
           </span>
         </li>
         <li style={menuItemStyle}>
-          <span
-            style={linkStyle}
-            onMouseEnter={(e) => (e.target.style.color = "#facc15")}
-            onMouseLeave={(e) => (e.target.style.color = "white")}
-            onClick={() => handleScroll("contact")}
-          >
+          <span style={linkStyle} onClick={() => handleScroll("contact")}>
             <FaPhone /> Contact
           </span>
         </li>
-        <li>
-          <span
-            style={linkStyle}
-            onMouseEnter={(e) => (e.target.style.color = "#facc15")}
-            onMouseLeave={(e) => (e.target.style.color = "white")}
-            onClick={() => navigate("/signin")} // 👈 Navigate to Sign In page
-          >
+        <li style={menuItemStyle}>
+          <span style={linkStyle} onClick={() => navigate("/signin")}>
             <FaSignInAlt /> Sign In
           </span>
+        </li>
+        <li>
+        <span
+  style={{
+    ...linkStyle,
+    fontWeight: "bold",
+    fontSize: "15px",
+    padding: "10px 20px",
+    marginRight:"25px",
+    borderRadius: "25px",
+    backgroundColor: "#facc15", // Attractive yellow button
+    color: "#1E40AF", // Dark blue text for contrast
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Soft shadow for depth
+    transition: "all 0.3s ease-in-out",
+    cursor: "pointer",
+  }}
+  onMouseEnter={(e) => (e.target.style.backgroundColor = "#eab308")} // Darker yellow on hover
+  onMouseLeave={(e) => (e.target.style.backgroundColor = "#facc15")}
+  onClick={handleChatClick}
+>
+  <FaComments style={{ fontSize: "22px" }} /> Chat with Me
+</span>
+
         </li>
       </ul>
 
@@ -180,6 +196,9 @@ const Navbar = () => {
         </span>
         <span style={linkStyle} onClick={() => navigate("/signin")}>
           <FaSignInAlt /> Sign In
+        </span>
+        <span style={linkStyle} onClick={handleChatClick}>
+          <FaComments /> Chat with Me
         </span>
       </div>
     </nav>

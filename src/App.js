@@ -11,14 +11,20 @@ import Admin from './Dashboard/Admin/AdminDashboard';
 import Students from './Dashboard/Student/StudentDashboard ';
 import Users from './Dashboard/User/Users'
 import {UserProvider} from './Auth/UserContext';
+import Chatbot from './Chatbot/Chatbot';
+
+import { useState } from "react";
+
 
 const App = () => {
+  const [chatOpen, setChatOpen] = useState(false);
   return (
     <UserProvider>
       
     <div>
       <Router>
-        <Navbar />
+      <Navbar onChatClick={() => setChatOpen(true)} />
+      {chatOpen && <Chatbot onClose={() => setChatOpen(false)} />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

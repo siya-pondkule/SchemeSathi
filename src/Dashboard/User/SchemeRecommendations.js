@@ -18,7 +18,7 @@ const SchemeRecommendations = () => {
   // Utility: parses and checks eligibility fields like Student, Disabled etc.
   const checkEligibility = (eligibility, user) => {
     const checks = [
-      user.StudentStatus === "Yes" ? eligibility.includes("Students") || eligibility.includes("student") : true,
+      user.StudentStatus === "Yes" ? eligibility.includes("Students") || eligibility.includes("student") : false,
       user.Employment === "Yes" ? eligibility.includes("employed") : eligibility.includes("unemployed"),
       user.Disability === "Yes" ? eligibility.includes("disabled") : true,
       user.Farmer === "Yes" ? eligibility.includes("farmer") : true,
@@ -36,36 +36,53 @@ const SchemeRecommendations = () => {
     const userCat = userCategory?.toLowerCase();
     return (
       category === "all" ||
-      category === userCat ||
-      category === "students" ||
-      category === "student"
+      category === userCat 
+      
     );
   };
 
   useEffect(() => {
     const fetchSchemes = async () => {
       setLoading(true);
-
+  
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user || !user.id) {
         console.error("User not found!");
         setLoading(false);
         return;
       }
-
-      // Fetch user data
+  
+      // 1. Fetch gender from users table
+      const { data: genderData, error: genderError } = await supabase
+        .from("users")
+        .select("gender")
+        .eq("id", user.id)
+        .single();
+  
+      if (genderError || !genderData) {
+        console.error("Error fetching gender:", genderError);
+        setLoading(false);
+        return;
+      }
+  
+      const userGender = genderData.gender?.toLowerCase();
+  
+      // 2. Fetch user_data
       const { data: userData, error: userError } = await supabase
         .from("user_data")
         .select("*")
         .eq("user_id", user.id)
         .single();
-
+  
       if (userError || !userData) {
         console.error("Error fetching user data:", userError);
         setLoading(false);
         return;
       }
-
+  
+      // Append gender to userData
+      userData.gender = userGender;
+  
       const {
         Age,
         Income,
@@ -76,24 +93,25 @@ const SchemeRecommendations = () => {
         Farmer,
         Business,
         GovtScheme,
-        SeniorCitizen
+        SeniorCitizen,
+        gender,
       } = userData;
-
+  
       const userAge = parseInt(Age);
       const userIncome = parseFloat(Income);
-
-      // Fetch all schemes
+  
+      // 3. Fetch schemes
       const { data: allSchemes, error: schemeError } = await supabase
         .from("schemes")
         .select("*");
-
+  
       if (schemeError) {
         console.error("Error fetching schemes:", schemeError);
         setLoading(false);
         return;
       }
-
-      // Parse and clean schemes
+  
+      // 4. Clean & filter schemes
       const cleanedSchemes = allSchemes.map((scheme) => {
         let eligibilityArray = [];
         try {
@@ -106,18 +124,18 @@ const SchemeRecommendations = () => {
         } catch (error) {
           console.error("Error parsing eligibility:", scheme.eligibility, error);
         }
-
+  
         return {
           ...scheme,
           eligibility: eligibilityArray,
           category: scheme.category?.toLowerCase(),
+          gender: scheme.gender?.toLowerCase(), // assuming scheme has a gender field
         };
       });
-
-      // Final filter
+  
       const filteredSchemes = cleanedSchemes.filter((scheme) => {
         const eligibility = scheme.eligibility || [];
-
+  
         const matchesCategory = categoryMatch(scheme.category, Category);
         const matchesEligibility = checkEligibility(eligibility, {
           StudentStatus,
@@ -127,21 +145,25 @@ const SchemeRecommendations = () => {
           Business,
           GovtScheme,
           SeniorCitizen,
-          Category
+          Category,
         });
-
+  
         const incomeOk = !scheme.incomeRequired || userIncome <= scheme.incomeRequired;
         const ageOk = isAgeEligible(userAge, scheme.ageGroup);
-
-        return matchesCategory || matchesEligibility || incomeOk || ageOk;
+  
+        const genderOk =
+          !scheme.gender || scheme.gender === gender;
+  
+        return (matchesCategory || matchesEligibility || incomeOk || ageOk) && genderOk;
       });
-
+  
       setSchemes(filteredSchemes);
       setLoading(false);
     };
-
+  
     fetchSchemes();
   }, []);
+  
 
   return (
     <div style={{ padding: "20px" }}>
